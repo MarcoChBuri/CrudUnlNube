@@ -14,16 +14,28 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-if-missin
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't')
 
-# Set ALLOWED_HOSTS dynamically from Azure's WEBSITE_HOSTNAME
+# 1. ALLOWED_HOSTS & CUSTOM DOMAINS
+# Include Azure's default hostname, plus any custom domain you add to Azure configuration
 WEBSITE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME', '')
-if WEBSITE_HOSTNAME:
-    ALLOWED_HOSTS = [WEBSITE_HOSTNAME]
-else:
-    ALLOWED_HOSTS = ['*']
+CUSTOM_DOMAIN = os.environ.get('CUSTOM_DOMAIN', '')
 
+ALLOWED_HOSTS = ['127.0.0.1']
+if WEBSITE_HOSTNAME:
+    ALLOWED_HOSTS.append(WEBSITE_HOSTNAME)
+if CUSTOM_DOMAIN:
+    ALLOWED_HOSTS.append(CUSTOM_DOMAIN)
+if not WEBSITE_HOSTNAME and not CUSTOM_DOMAIN:
+    ALLOWED_HOSTS = ['*'] # Fallback for local development
+
+# 2. FIX SSL/TLS PROXY BEHAVIOR (CRITICAL FOR AZURE)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# 3. FIX CSRF TRUST ORIGINS
 CSRF_TRUSTED_ORIGINS = []
 if WEBSITE_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{WEBSITE_HOSTNAME}')
+if CUSTOM_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{CUSTOM_DOMAIN}')
 
 # Application definition
 INSTALLED_APPS = [
