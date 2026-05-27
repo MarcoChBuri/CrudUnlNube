@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+import dj_database_url
 # Load environment variables from .env file
 load_dotenv()
 
@@ -14,7 +14,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-if-missin
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['*']
+# Set ALLOWED_HOSTS dynamically from Azure's WEBSITE_HOSTNAME
+WEBSITE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME', '')
+if WEBSITE_HOSTNAME:
+    ALLOWED_HOSTS = [WEBSITE_HOSTNAME]
+else:
+    ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = []
+if WEBSITE_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{WEBSITE_HOSTNAME}')
 
 # Application definition
 INSTALLED_APPS = [
@@ -29,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -59,23 +69,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
-
-# Example PostgreSQL / MySQL configuration for later (Azure deployment)
-# db_engine = os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3')
-# if db_engine != 'django.db.backends.sqlite3':
-#     DATABASES['default'] = {
-#         'ENGINE': db_engine,
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT'),
-#     }
 
 
 # Password validation
@@ -103,6 +102,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
