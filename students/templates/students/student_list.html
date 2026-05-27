@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Students Directory{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-end">
+    <div>
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">Students Directory</h1>
+        <p class="text-gray-500 dark:text-gray-400">Manage and view enrolled students.</p>
+    </div>
+</div>
+
+{% if students %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {% for student in students %}
+    <div class="glass rounded-2xl overflow-hidden hover-lift flex flex-col group">
+        <div class="h-32 bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-gray-800 dark:to-gray-700 relative">
+            {% if student.photo %}
+            <img src="{{ student.photo.url }}" alt="{{ student.first_name }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center text-blue-300 dark:text-gray-500">
+                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+            </div>
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+                <h2 class="text-xl font-bold text-white truncate">{{ student.first_name }} {{ student.last_name }}</h2>
+            </div>
+        </div>
+        <div class="p-5 flex-grow flex flex-col justify-between">
+            <div class="mb-4">
+                <div class="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-2">
+                    <span class="truncate">{{ student.email }}</span>
+                </div>
+                <div class="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                    Enrolled: {{ student.enrollment_date|date:"M d, Y" }}
+                </div>
+            </div>
+            <a href="{{ student.get_absolute_url }}" class="block w-full text-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 rounded-lg font-medium transition-colors">
+                View Profile
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass rounded-2xl p-12 text-center">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No students found</h3>
+    <p class="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first student profile.</p>
+    <a href="{% url 'student-create' %}" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors hover-lift shadow-lg shadow-blue-500/30">
+        Add New Student
+    </a>
+</div>
+{% endif %}
+{% endblock %}

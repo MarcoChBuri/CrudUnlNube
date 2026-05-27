@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased text-gray-900 bg-gray-50 dark:bg-gray-900 dark:text-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Portal{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(31, 41, 55, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        body {
+            background-image: radial-gradient(circle at top right, #dbeafe, transparent 400px),
+                              radial-gradient(circle at bottom left, #eff6ff, transparent 400px);
+            background-attachment: fixed;
+        }
+        .dark body {
+            background-image: radial-gradient(circle at top right, rgba(30, 58, 138, 0.3), transparent 400px),
+                              radial-gradient(circle at bottom left, rgba(17, 24, 39, 0.8), transparent 400px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans transition-colors duration-300">
+    <nav class="glass sticky top-0 z-50 px-6 py-4 shadow-sm mb-8">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="{% url 'student-list' %}" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                StudentPortal
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'student-list' %}" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Home</a>
+                <a href="{% url 'student-create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hover-lift shadow-md shadow-blue-500/30">Add Student</a>
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow max-w-6xl mx-auto w-full px-6 pb-12">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="glass mt-auto py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+        <p>&copy; {% now "Y" %} StudentPortal. All rights reserved.</p>
+    </footer>
+</body>
+</html>
