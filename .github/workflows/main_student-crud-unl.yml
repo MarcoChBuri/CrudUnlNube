@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'student-crud-unl'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B5459B378ED641B2AEDE1B6703596799 }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
